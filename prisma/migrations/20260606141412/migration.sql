@@ -1,0 +1,2 @@
+-- RenameIndex
+ALTER INDEX "SeasonTeamWinRate_seasonId_playerName_hero1Id_hero2Id_hero3I_ke" RENAME TO "SeasonTeamWinRate_seasonId_playerName_hero1Id_hero2Id_hero3_key";

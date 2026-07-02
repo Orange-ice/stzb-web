@@ -1,0 +1,197 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Season {
+  id        String    @id @default(cuid())
+  name      String
+  code      String    @unique
+  status    String    @default("active")
+  isMobileTeamDefault Boolean @default(false)
+  startAt   DateTime?
+  endAt     DateTime?
+  remark    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  members       SeasonMember[]
+  teamSnapshots SeasonTeamSnapshot[]
+  syncRecords   SyncRecord[]
+  wuSnapshots   SeasonMemberWuSnapshot[]
+  siegeRecords  SeasonMemberSiegeRecord[]
+  winRates      SeasonTeamWinRate[]
+
+  @@index([isMobileTeamDefault])
+}
+
+model SeasonMember {
+  id              String    @id @default(cuid())
+  seasonId        String
+  playerIdInGame  Int
+  playerName      String
+  groupName       String?
+  power           Int?
+  wu              Int?
+  contributeTotal Int?
+  contributeWeek  Int?
+  pos             Int?
+  joinTime        Int?
+  status          String    @default("active") // active 在盟 / wild 在野 / hidden 隐藏
+  lastSyncBatchId String?
+  lastSyncedAt    DateTime?
+  sourceUpdatedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([seasonId, playerIdInGame])
+  @@index([seasonId, playerName])
+  @@index([seasonId, status])
+}
+
+model SeasonMemberWuSnapshot {
+  id             String   @id @default(cuid())
+  seasonId       String
+  syncBatchId    String
+  playerIdInGame Int
+  memberName     String
+  groupName      String?
+  weekNo         Int
+  wu             Int
+  power          Int?
+  capturedAt     DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@index([seasonId, playerIdInGame, weekNo])
+  @@index([seasonId, weekNo])
+}
+
+model SeasonTeamWinRate {
+  id           String   @id @default(cuid())
+  seasonId     String
+  playerName   String
+  hero1Id      Int
+  hero2Id      Int
+  hero3Id      Int
+  hero1Level   Int?
+  hero2Level   Int?
+  hero3Level   Int?
+  hero1Star    Int?
+  hero2Star    Int?
+  hero3Star    Int?
+  totalStar    Int?
+  totalBattles Int      @default(0)
+  winCount     Int      @default(0)
+  drawCount    Int      @default(0)
+  lossCount    Int      @default(0)
+  role         String?
+  allSkillInfo String?
+  lastTime     Int?
+  syncBatchId  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([seasonId, playerName, hero1Id, hero2Id, hero3Id])
+  @@index([seasonId, playerName])
+}
+
+model SeasonMemberSiegeRecord {
+  id             String    @id @default(cuid())
+  seasonId       String
+  localTaskId    Int
+  playerIdInGame Int
+  memberName     String
+  taskName       String?
+  targetName     String?
+  targetPosition String?
+  finishedAt     DateTime?
+  mainCount      Int       @default(0)
+  demolishCount  Int       @default(0)
+  mainTimes      Int       @default(0)
+  demolishTimes  Int       @default(0)
+  syncBatchId    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([seasonId, localTaskId, playerIdInGame])
+  @@index([seasonId, playerIdInGame])
+}
+
+model SeasonTeamSnapshot {
+  id             String    @id @default(cuid())
+  seasonId       String
+  playerName     String
+  unionName      String?
+  isFriendly     Boolean   @default(false)
+  idu            String?
+  role           String
+  battleId       Int?
+  snapshotTime   DateTime?
+  hero1Id        Int
+  hero2Id        Int
+  hero3Id        Int
+  hero1Level     Int?
+  hero2Level     Int?
+  hero3Level     Int?
+  hero1Star      Int?
+  hero2Star      Int?
+  hero3Star      Int?
+  totalStar      Int?
+  allSkillInfo   String?
+  gearInfo       String?
+  heroType       String?
+  sourceHash     String
+  sourceClientId String?
+  syncBatchId    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([seasonId, sourceHash, isFriendly])
+  @@index([seasonId, playerName])
+  @@index([seasonId, unionName])
+  @@index([seasonId, isFriendly])
+  @@index([seasonId, idu])
+}
+
+model SyncRecord {
+  id              String   @id @default(cuid())
+  seasonId        String
+  syncTime        DateTime @default(now())
+  operationType   String
+  syncedCount     Int
+  operatorRole    String
+  operatorAlliance String?
+  operatorServer  String?
+  syncBatchId     String?
+  createdCount    Int?
+  updatedCount    Int?
+  markedWild      Int?
+  snapshotCount   Int?
+  invalidCount    Int?
+  errorMessage    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@index([seasonId, syncTime])
+  @@index([syncTime])
+}
