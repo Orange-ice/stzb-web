@@ -2,6 +2,8 @@ import { listTeamPlayerSummaries } from "@/lib/team-query";
 import { listSeasons } from "@/lib/seasons";
 import { TeamsPageClient } from "./teams-page-client";
 
+export const dynamic = "force-dynamic";
+
 export default async function TeamsPage({
   searchParams,
 }: {

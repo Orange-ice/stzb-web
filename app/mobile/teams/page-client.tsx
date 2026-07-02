@@ -169,7 +169,7 @@ export function MobileTeamsPageClient({
         throw new Error(payload.message || "加载下一页失败");
       }
 
-      setItems((current) => [...current, ...payload.data.items]);
+      setItems((current) => [...current, ...payload.data?.items || []]);
       setNextPage((current) => current + 1);
     } catch (error) {
       setLoadMoreError(error instanceof Error ? error.message : "加载下一页失败");

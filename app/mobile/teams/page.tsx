@@ -2,6 +2,8 @@ import { getMobileTeamSeason } from "@/lib/seasons";
 import { listTeamPlayerSummaries } from "@/lib/team-query";
 import { MobileTeamsPageClient } from "./page-client";
 
+export const dynamic = "force-dynamic";
+
 export default async function MobileTeamsPage({
   searchParams,
 }: {
