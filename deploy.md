@@ -54,6 +54,16 @@ sudo usermod -aG docker $USER
 
 > 如果服务器在国内拉取镜像慢，可给 Docker 配置镜像加速器（`/etc/docker/daemon.json` 里加 `registry-mirrors`），再 `sudo systemctl restart docker`。
 
+ ```json
+  {
+    "registry-mirrors": [
+      "https://docker.m.daocloud.io",
+      "https://docker.nju.edu.cn"
+    ]
+  }
+```
+
+
 ---
 
 ## 二、准备项目文件
