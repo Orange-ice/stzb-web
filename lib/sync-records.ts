@@ -137,7 +137,7 @@ export async function syncSeasonTeams(payload: TeamSyncPayload) {
         operatorServer: payload.operatorServer?.trim() || null,
       },
     });
-  });
+  }, { maxWait: 60000, timeout: 60000 });
 
   return {
     syncedCount: uniquePrepared.length,
